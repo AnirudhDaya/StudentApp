@@ -33,7 +33,7 @@ import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Meteors } from "@/components/ui/meteors";
-
+import { Suspense } from "react";
 // export const metadata: Metadata = {
 //   title: "Dashboard",
 //   description: "Example dashboard app built using the components.",

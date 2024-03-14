@@ -206,7 +206,7 @@ export default function DashboardPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {classes.map((cls) => (
               
-                <Card className="cursor-pointer" onClick={()=>handleRoute(cls.name)}>
+                <Card className="cursor-pointer" key={cls.name} onClick={()=>handleRoute(cls.name)}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                    
                   </CardHeader>
@@ -255,8 +255,8 @@ export default function DashboardPage() {
                 <DialogHeader>
                   <DialogTitle>Add a New Class</DialogTitle>
                   <DialogDescription>
-                    Upload the CSV in the format given below. Click submit when
-                    you're done.
+                    {`Upload the CSV in the format given below. Click submit when
+                    you&aposre done.`}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
