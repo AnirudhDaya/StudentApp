@@ -68,7 +68,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             });
             // router.push("/", { scroll: false });
             
-            // window.location.href = "/"
+            window.location.href = "/"
           } else {
             toast({
               title: "Fail",

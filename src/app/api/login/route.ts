@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
         maxAge: 60 * 60 * 24 * 30, // 30 days
         path: '/',
       });
-      NextResponse.redirect('/')
+      // NextResponse.redirect('/')
       return NextResponse.json({}, { status: 200 });
   }
 export async function GET(request: NextRequest) {
