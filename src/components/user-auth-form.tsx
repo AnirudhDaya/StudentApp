@@ -67,7 +67,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               description: "Redirecting to dashboard",
             });
             router.refresh()
-            router.push("/");
+            router.replace("/");
           } else {
             toast({
               title: "Fail",
