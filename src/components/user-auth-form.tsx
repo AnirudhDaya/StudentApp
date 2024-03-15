@@ -66,8 +66,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               title: "Success",
               description: "Redirecting to dashboard",
             });
-            router.refresh()
-            router.replace("/");
+            // router.push("/", { scroll: false });
+            
+            window.history.replaceState(null, '','/')
           } else {
             toast({
               title: "Fail",
