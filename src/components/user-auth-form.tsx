@@ -72,8 +72,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               localStorage.setItem("teamCode", data.TeamCode);
               localStorage.setItem("teamName", data.TeamName);
             }
-            router.push("/", { scroll: false });
-            // window.location.href = "/dashboard"
+            // router.push("/", { scroll: false });
+            window.location.href = "/"
           } else {
             toast({
               title: "Fail",
