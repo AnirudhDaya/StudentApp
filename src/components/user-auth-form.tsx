@@ -66,9 +66,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               title: "Success",
               description: "Redirecting to dashboard",
             });
-            // router.push("/", { scroll: false });
-            
-            window.location.href = "/"
+            if(data.TeamCode) {
+              console.log("SHIIT");
+              console.log("Team Code auth", data.TeamCode);
+              localStorage.setItem("teamCode", data.TeamCode);
+              localStorage.setItem("teamName", data.TeamName);
+            }
+            router.push("/", { scroll: false });
+            // window.location.href = "/dashboard"
           } else {
             toast({
               title: "Fail",

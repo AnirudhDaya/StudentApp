@@ -6,10 +6,10 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isPublicPath = path === '/login';
 
-  const sessionToken = request.cookies.get('token')?.value || '';
+  const sessionToken = request.cookies.get('token_stud')?.value || '';
 
   // TODO: instead of userdetails return teaminformation 
-  if(isPublicPath && sessionToken){
+  if(isPublicPath && sessionToken){ // TODO: wtf IS THIS API
     const res = await fetch('https://pmt-inajc.ondigitalocean.app/userdetails/', {
       method: 'POST',
       headers: {
@@ -22,7 +22,6 @@ export async function middleware(request: NextRequest) {
       toast({
         title: 'Already Logged In',
         description: `Redirecting you back`,
-        
       })
     return NextResponse.redirect(new URL('/', request.nextUrl));
     }

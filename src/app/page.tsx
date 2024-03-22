@@ -10,10 +10,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { MainNav } from "@/components/main-nav";
 import { Overview } from "@/components/overview";
 import { RecentSales } from "@/components/recent-sales";
 import { UserNav } from "@/components/user-nav";
+
+import { Copy } from "lucide-react";
+import copy from "copy-to-clipboard";
+import { MdOutlineExitToApp } from "react-icons/md";
 import {
   Dialog,
   DialogClose,
@@ -33,142 +48,205 @@ import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import { NextRequest } from "next/server";
 import { useRouter } from "next/navigation";
-
-// export const metadata: Metadata = {
-//   title: "Dashboard",
-//   description: "Example dashboard app built using the components.",
-// };
-interface Class {
-  strength: number;
-  name: string; // Assuming strength is a number, adjust the type as necessary
-  // Add other properties of cls here if needed
- }
+import { MdPerson, MdGroupAdd, MdAdd } from "react-icons/md";
+import { Icon } from "@radix-ui/react-select";
 
 export default function DashboardPage() {
-  const [classes, setClasses] = useState<Class[]>([]);
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: "",
-    picture: null,
-  });
-  
-  useEffect( () => {
-    const fetchClasses = async () => {
-      try {
-        const res = await fetch("/api/login", {
-          method: "GET",
-        });
-  
-        if (res.status === 200) {
-          const val  = await res.json();
-            const getClasses = await fetch(
-              "https://pmt-inajc.ondigitalocean.app/get_classes/",
-              {
-                method: "POST",
-                headers: {
-                  Authorization: `Token ${val.token.value}`,
-                },
-              }
-            );
-            if (getClasses.status === 200) {
-              const data = await getClasses.json();
-              setClasses(data);
-            }
-            // Optionally, update the class list on the dashboard
-          } else {
-            toast({
-              title: "Message",
-              description: "No classes found!",
-            });
-          }
-       
-      } catch (error) {
+  const [teamCode, setTeamcode] = useState<string>("");
+  const [teamName, setTeamname] = useState<string>("");
+  const [cardData, setCardData] = useState<string[]>([]);
+  const [copied, setCopied] = useState<boolean>(false);
+
+  const handleSubmit = async () => {
+    const res = await fetch("/api/login", {
+      method: "GET",
+    });
+    if (res.status === 200) {
+      const val = await res.json();
+      console.log(teamName);
+      const data = new FormData();
+      data.append("name", teamName);
+      const createdTeam = await fetch(
+        "https://pmt-inajc.ondigitalocean.app/create_team/",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Token ${val.token.value}`,
+            // "Content-Type": "application/json",
+          },
+          body: data, // Include team name in request body
+        }
+      );
+      console.log(createdTeam);
+      if (createdTeam.status === 201) {
+        const team = await createdTeam.json();
+        console.log(team.code);
         toast({
-          title: "Error",
-          description: "Something went wrong",
+          title: "Success",
+          description: "Team created successfully",
+        });
+        localStorage.setItem("teamCode", team.code);
+        localStorage.setItem("teamName", team.name);
+        window.location.reload();
+      } else {
+        toast({
+          title: "Error!",
+          description: "Failed to create team",
           variant: "destructive",
         });
       }
-    }
-    fetchClasses();
-  },[]);
-
-  const handleFileChange = (e: any) => {
-    setFormData({ ...formData, picture: e.target.files[0] });
-  };
-
-  async function handleSubmit(e: any) {
-    e.preventDefault();
-    dialogClose();
-    // Validate form data here
-    // For example, check if name is not empty and picture is selected
-    if (!formData.name || !formData.picture) {
+    } else {
       toast({
-        title: "Look Out!",
-        description: "Please fill in all fields",
+        title: "Error!",
+        description: "No session exists",
         variant: "destructive",
       });
-      return;
     }
+  };
 
-    // Create FormData object
-    const formDataToSubmit = new FormData();
-    formDataToSubmit.append("class", formData.name);
-    formDataToSubmit.append("csv_file", formData.picture);
+  const handleJoin = async () => {
+    const res = await fetch("/api/login", {
+      method: "GET",
+    });
+    if (res.status === 200) {
+      const val = await res.json();
+      console.log(teamName);
+      const data = new FormData();
+      // data.append("code", teamCode);
+      const createdTeam = await fetch(
+        "https://pmt-inajc.ondigitalocean.app//join_team/",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Token ${val.token.value}`,
+            // "Content-Type": "application/json",
+          },
+          body: data, // Include team name in request body
+        }
+      );
+      console.log(createdTeam);
+      if (createdTeam.status === 201) {
+        const team = await createdTeam.json();
+        console.log(team.code);
+        toast({
+          title: "Success!",
+          description: "You have joined a team successfully",
+        });
+        localStorage.setItem("teamCode", team.code);
+        localStorage.setItem("teamName", team.name);
+        window.location.reload();
+      } else {
+        toast({
+          title: "Error!",
+          description: "Failed to join team",
+          variant: "destructive",
+        });
+      }
+    } else {
+      toast({
+        title: "Error!",
+        description: "No sessions found",
+        variant: "destructive",
+      });
+    }
+  };
 
-    // Submit to API
-    try {
+  const handleInputChange = (e: any) => {
+    setTeamname(e.target.value);
+  };
+
+  const handleCopy = () => {
+    copy(
+      `Hola compadre, únete a mi pandilla "${teamName}" ahora. Aquí está el código del equipo: "${teamCode}"`
+    );
+    setCopied(true);
+    toast({
+      title: "Message",
+      description: "Invite code copied to clipboard",
+    });
+  };
+
+  const handleLeaveTeam = async () => {
+    const res = await fetch("/api/login", {
+      method: "GET",
+    });
+    if (res.status === 200) {
+      const val = await res.json();
+      // console.log(teamName);
+      // data.append("code", teamCode);
+      const leftTeam = await fetch(
+        "https://pmt-inajc.ondigitalocean.app/leave_team/",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Token ${val.token.value}`,
+            // "Content-Type": "application/json",
+          },
+        }
+      );
+      if (leftTeam.status == 200) {
+        const data = await leftTeam.json();
+        toast({
+          title: "Success",
+          description: data.detail,
+        });
+        localStorage.removeItem("teamName");
+        localStorage.removeItem("teamCode");
+        window.location.reload();
+      }
+    }
+  };    
+
+  useEffect(() => {
+    const teamCodeFromStorage = localStorage.getItem("teamCode") || "";
+    const teamNameFromStorage = localStorage.getItem("teamName") || "";
+
+    setTeamcode(teamCodeFromStorage);
+    setTeamname(teamNameFromStorage);
+
+    console.log("teamCode", teamCodeFromStorage); // Log the value to see if it's empty
+  }, []);
+
+  useEffect(() => {
+    async function fetchData() {
       const res = await fetch("/api/login", {
         method: "GET",
       });
-
       if (res.status === 200) {
         const val = await res.json();
-        console.log("PUTA MADRE", formDataToSubmit.get("picture"));
-        const response = await fetch(
-          "https://pmt-inajc.ondigitalocean.app/create_class/",
+        console.log(val.token.value);
+        const teamDetails = await fetch(
+          "https://pmt-inajc.ondigitalocean.app/team_members/",
           {
-            method: "POST",
+            method: "GET",
             headers: {
               Authorization: `Token ${val.token.value}`,
             },
-            body: formDataToSubmit,
           }
         );
-        if (response.status === 200) {
-          const data = await response.json();
-          // If a user session exists, redirect to the main page
+        console.log(teamDetails);
+        if (teamDetails.status === 200) {
+          const data = await teamDetails.json();
+          setCardData(data.members);
+        } else if (teamDetails.status === 400) {
+          const data = await teamDetails.json();
           toast({
-            title: "Class Created",
-            description: "Class created successfully",
+            title: "Darn!",
+            description: "Join or create a new team",
           });
-          
-          // Optionally, update the class list on the dashboard
         } else {
           toast({
-            title: "Message",
-            description: "No classes found!",
+            title: "Error",
+            description: "Failed to fetch team details",
+            variant: "destructive",
           });
         }
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to create class",
-          variant: "destructive",
-        });
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Something went wrong",
-        variant: "destructive",
-      });
     }
-  }
+    fetchData();
+  }, []);
 
-  const handleRoute = (className: string) => {
-        router.push(`/class?name=${className}`, { scroll: false });
-  }
   return (
     <>
       <div className="md:hidden">
@@ -202,110 +280,175 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           </div>
-
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {classes.map((cls) => (
-              
-                <Card className="cursor-pointer" key={cls.name} onClick={()=>handleRoute(cls.name)}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                   
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{cls.name }</div>
-                    <p className="text-xs text-muted-foreground">
-                    {`${cls.strength} students`}
-                    </p>
-                  </CardContent>
-                </Card>
-             
-            ))}
+            {teamCode ? (
+              <>
+                {cardData.map((member: string) => (
+                  <Card className="cursor-pointer bg-slate-800">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <div className="flex-grow"></div>{" "}
+                      {/* This div takes up the remaining space, pushing the icon to the right */}
+                      <MdPerson /> {/* Icon */}
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{member}</div>
+                    </CardContent>
+                  </Card>
+                ))}
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <Card className="col-span-1 bg-blue-500 text-white cursor-pointer">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Add new Class
-                    </CardTitle>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <line x1="12" y1="5" x2="12" y2="19" />
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                  </CardHeader>
-                  <CardContent className="p-4">
-                    <div className="text-2xl font-bold">Add new Class</div>
-                    <p className="text-xs">
-                      Click to add a new class to your dashboard.
-                    </p>
-                  </CardContent>
-                </Card>
-              </DialogTrigger>
+                <Dialog>
+                  <DialogTrigger>
+                    <Card className="cursor-pointer">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <div className="flex-grow"></div>{" "}
+                        {/* This div takes up the remaining space, pushing the icon to the right */}
+                        <MdGroupAdd /> {/* Icon */}
+                      </CardHeader>{" "}
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          Invite Teammates
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Invite a new member</DialogTitle>
+                      <DialogDescription>
+                        Copy the code and send it to your friend.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex items-center space-x-2">
+                      <div className="grid flex-1 gap-2">
+                        <Label htmlFor="link" className="sr-only">
+                          Link
+                        </Label>
+                        <Input
+                          id="text"
+                          defaultValue={teamCode}
+                          readOnly
+                        />
+                      </div>
+                      <Button type="submit" size="sm" className="px-3">
+                        <span className="sr-only">Copy</span>
+                        <Copy onClick={handleCopy} className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                <AlertDialog>
+                  <AlertDialogTrigger>
+                    <Card className="cursor-pointer bg-red-500">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <div className="flex-grow"></div>{" "}
+                        {/* This div takes up the remaining space, pushing the icon to the right */}
+                        <MdOutlineExitToApp /> {/* Icon */}
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">Leave Team</div>
+                      </CardContent>
+                    </Card>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        remove you from this team.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleLeaveTeam}>
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            ) : (
+              <>
+                <Dialog>
+                  <DialogTrigger>
+                    <Card className="cursor-pointer bg-blue-600">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"></CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {/* <MdGroupAdd /> */}
+                          Create Team
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Start a party
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create a new Team</DialogTitle>
+                      <DialogDescription>
+                        Bring your gang together.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                          Team Name
+                        </Label>
+                        <Input
+                          id="name"
+                          value={teamName} // Set input value from teamName state
+                          onChange={handleInputChange}
+                           // Update teamName state on input change
+                          placeholder="Amogus"
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        onClick={handleSubmit}
+                        color="white"
+                        type="submit"
+                      >
+                        Create
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                <Dialog>
+                  <DialogTrigger>
+                    <Card className="cursor-pointer">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"></CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">Join a team</div>
+                        <p className="text-xs text-muted-foreground">
+                          Got invited to a party
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Enter Team Code</DialogTitle>
+                      <DialogDescription>
+                        <Input />
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button onClick={handleJoin} color="white" type="submit">
+                        Join
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </>
+            )}
 
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Add a New Class</DialogTitle>
-                  <DialogDescription>
-                    {`Upload the CSV in the format given below. Click submit when
-                    you&aposre done.`}
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name" className="text-right">
-                      Class Name
-                    </Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="R8B"
-                      className="col-span-3"
-                      // value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="picture" className="text-right">
-                      Upload
-                    </Label>
-                    <Input
-                      id="picture"
-                      type="file"
-                      accept="text/csv"
-                      className="col-span-3"
-                      onChange={handleFileChange}
-                    />
-                  </div>
-                  <TableDemo />
-                  {/* <div className="grid grid-cols-4 items-center gap-4">
-                      </div> */}
-                </div>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={handleSubmit}
-                    >
-                      Add
-                    </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            {/* Other dialogs */}
           </div>
-          
         </div>
       </div>
     </>

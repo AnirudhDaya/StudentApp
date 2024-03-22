@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
       const data = await request.json();
     //   const token = data.token;
     
-      cookies().set('token', data.token, {
+      cookies().set('token_stud', data.token, {
         maxAge: 60 * 60 * 24 * 30, // 30 days
         path: '/',
       });
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
       
     try {
-      const val = request.cookies.get('token');
+      const val = request.cookies.get('token_stud');
       if(val)
         return NextResponse.json({token: val}, { status: 200 });
       else
