@@ -284,7 +284,7 @@ export default function DashboardPage() {
             {teamCode ? (
               <>
                 {cardData.map((member: string) => (
-                  <Card className="cursor-pointer bg-slate-800">
+                  <Card className="cursor-pointer bg-slate-800" key={member}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <div className="flex-grow"></div>{" "}
                       {/* This div takes up the remaining space, pushing the icon to the right */}
