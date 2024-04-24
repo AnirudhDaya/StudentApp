@@ -68,7 +68,7 @@ export default function DashboardPage() {
       const data = new FormData();
       data.append("name", teamName);
       const createdTeam = await fetch(
-        "https://pmt-inajc.ondigitalocean.app/create_team/",
+        "https://proma-ai-uw7kj.ondigitalocean.app/create_team/",
         {
           method: "POST",
           headers: {
@@ -115,7 +115,7 @@ export default function DashboardPage() {
       const data = new FormData();
       // data.append("code", teamCode);
       const createdTeam = await fetch(
-        "https://pmt-inajc.ondigitalocean.app//join_team/",
+        "https://proma-ai-uw7kj.ondigitalocean.app//join_team/",
         {
           method: "POST",
           headers: {
@@ -176,7 +176,7 @@ export default function DashboardPage() {
       // console.log(teamName);
       // data.append("code", teamCode);
       const leftTeam = await fetch(
-        "https://pmt-inajc.ondigitalocean.app/leave_team/",
+        "https://proma-ai-uw7kj.ondigitalocean.app/leave_team/",
         {
           method: "POST",
           headers: {
@@ -217,7 +217,7 @@ export default function DashboardPage() {
         const val = await res.json();
         console.log(val.token.value);
         const teamDetails = await fetch(
-          "https://pmt-inajc.ondigitalocean.app/team_members/",
+          "https://proma-ai-uw7kj.ondigitalocean.app/team_members/",
           {
             method: "GET",
             headers: {
