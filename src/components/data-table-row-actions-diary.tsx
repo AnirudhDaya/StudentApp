@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { labels } from "../data/data"
-import { taskSchema } from "../data/schema"
+import { diarySchema } from "../data/diary-schema"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -28,7 +28,7 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const task = taskSchema.parse(row.original)
+  const task = diarySchema.parse(row.original)
 
   return (
     <DropdownMenu>

@@ -1,18 +1,11 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-
 import { Checkbox } from "@/components/ui/checkbox";
-
 import { statuses } from "../data/data";
-import { Task } from "../data/schema";
+import { Diary } from "@/data/diary-schema";
 import { DataTableColumnHeader } from "./data-table-column-header";
-import { DataTableRowActions } from "./data-table-row-actions";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { DataTableRowActions } from "./data-table-row-actions-diary";
 import {
   Drawer,
   DrawerClose,
@@ -24,17 +17,11 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "./ui/button";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import React from "react";
-export const columns: ColumnDef<Task>[] = [
+
+
+
+export const columns: ColumnDef<Diary>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -61,46 +48,24 @@ export const columns: ColumnDef<Task>[] = [
   },
 
   {
-    accessorKey: "title",
+    accessorKey: "date",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Project Name" />
+      <DataTableColumnHeader column={column} title="Date" />
     ),
     cell: ({ row }) => {
+      
       return (
         <div className="flex space-x-2">
-          <span className="max-w-[25rem] lg:max-w-[100%]  truncate font-medium">
+          <span className="font-medium whitespace-normal ">
             <Drawer>
               <DrawerTrigger className="underline">
-                {row.getValue("title")}
+                {row.getValue("date")}
               </DrawerTrigger>
               <DrawerContent>
                 <DrawerHeader>
-                  <DrawerTitle>Documents Uploaded</DrawerTitle>
+                  <DrawerTitle>Remarks</DrawerTitle>
                   <DrawerDescription>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-[100px] ">Document</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell className="font-medium">Abstract</TableCell>
-                          <TableCell className="underline italic">{row.original.abstract}</TableCell>
-                        </TableRow>
-                         {/* Check if researchPapers is defined and is an array */}
-  {Array.isArray(row.original.researchPapers) && (
-    // Mapping through research papers and creating a new TableRow for each paper
-    (row.original.researchPapers as string[]).map((paper: string, index: number) => (
-      <TableRow key={index}>
-        <TableCell className="font-medium">Paper {index + 1}:</TableCell>
-        <TableCell className="underline italic">{paper}</TableCell>
-      </TableRow>
-    ))
-  )}
-                      </TableBody>
-                    </Table>
+                    {row.original.remarks}
                   </DrawerDescription>
                 </DrawerHeader>
                 <DrawerFooter>
@@ -116,9 +81,9 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: "teamMembers",
+    accessorKey: "remarks",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Team Members" />
+      <DataTableColumnHeader column={column} title="Remarks" />
     ),
     cell: ({ row }) => {
       // const label = labels.find((label) => label.value === row.original.label)
@@ -126,18 +91,13 @@ export const columns: ColumnDef<Task>[] = [
       return (
         <div className="flex space-x-2">
           {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
-          <span className="max-w-[15rem] lg:max-w-[100%] truncate font-medium">
-            {(row.getValue("teamMembers") as string[]).join(", ")}
+          <span className=" whitespace-normal font-medium">
+            {row.original.remarks}
           </span>
         </div>
       );
     },
-    filterFn: (row, id, value) => {
-      const teamMembers = row.getValue(id) as string[];
-      return teamMembers.some(member =>
-        member.toLowerCase().includes(value.toLowerCase())
-      );
-   },
+    
   },
 
   {
@@ -166,6 +126,27 @@ export const columns: ColumnDef<Task>[] = [
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
+  },
+  
+  {
+    accessorKey: "diary",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Diary" />
+    ),
+    cell: ({ row }) => {
+      // const label = labels.find((label) => label.value === row.original.label)
+
+      return (
+        <div className="flex space-x-2">
+          {/* {label && <Badge variant="outline">{label.label}</Badge>} */}
+          <span className=" whitespace-normal font-medium">
+            <a href={row.original.diary} target="_blank">submission</a>
+            
+          </span>
+        </div>
+      );
+    },
+    
   },
   {
     id: "actions",

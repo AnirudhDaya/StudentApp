@@ -249,22 +249,8 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="md:hidden">
-        <Image
-          src="/examples/dashboard-light.png"
-          width={1280}
-          height={866}
-          alt="Dashboard"
-          className="block dark:hidden"
-        />
-        <Image
-          src="/examples/dashboard-dark.png"
-          width={1280}
-          height={866}
-          alt="Dashboard"
-          className="hidden dark:block"
-        />
-      </div>
+      
+     
       <div className="hidden flex-col md:flex">
         <div className="border-b">
           <div className="flex h-16 items-center px-4">
@@ -446,7 +432,18 @@ export default function DashboardPage() {
                 </Dialog>
               </>
             )}
+            <Link href="/diary">
 
+            <Card className="cursor-pointer">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"></CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">Diary</div>
+                        <p className="text-xs text-muted-foreground">
+                          Submit or view diary submissions
+                        </p>
+                      </CardContent>
+            </Card>
+            </Link>
             {/* Other dialogs */}
           </div>
         </div>
