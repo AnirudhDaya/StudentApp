@@ -57,7 +57,7 @@ export default function DashboardPage() {
   const [teamName, setTeamname] = useState<string>("");
   const [cardData, setCardData] = useState<string[]>([]);
   const [copied, setCopied] = useState<boolean>(false);
-
+  const [projectId, setprojectid] = useState<number | null>()
   const handleSubmit = async () => {
     const res = await fetch("/api/login", {
       method: "GET",
@@ -229,6 +229,8 @@ export default function DashboardPage() {
         if (teamDetails.status === 200) {
           const data = await teamDetails.json();
           setCardData(data.members);
+          setprojectid(data.project_id);
+          console.log(data.project_id);
         } else if (teamDetails.status === 400) {
           const data = await teamDetails.json();
           toast({
@@ -432,7 +434,8 @@ export default function DashboardPage() {
                 </Dialog>
               </>
             )}
-            <Link href="/diary">
+             {projectId !== null && (
+            <Link href={`/diary/?id=${projectId}`}>
 
             <Card className="cursor-pointer">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"></CardHeader>
@@ -444,6 +447,7 @@ export default function DashboardPage() {
                       </CardContent>
             </Card>
             </Link>
+            )}
             {/* Other dialogs */}
           </div>
         </div>

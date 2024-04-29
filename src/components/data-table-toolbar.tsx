@@ -27,7 +27,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover"
 import { format } from "date-fns"
 import { Calendar } from "./ui/calendar"
 import { toast } from "./ui/use-toast"
-
+import { useSearchParams } from "next/navigation"
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
 }
@@ -36,24 +36,15 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
-  const [date, setDate] = React.useState<Date>()
   const [file, setFile] = useState<File | null>()
   const [remarks, setRemarks] = React.useState("");
-
+  const params = useSearchParams()
+  const project_id = params.get('id')
   const handleSubmit: any = async (e:any) => {
     e.preventDefault();
     dialogClose();
     const formData = new FormData();
-    if(!date) {
-      toast({
-        title: "Error!",
-        description: "Please enter a valid date",
-        variant: "destructive",
-      });
-      return;
-    }
-    else
-      formData.append("date", date.toISOString());
+ 
     
       
     if(!file) {
@@ -65,35 +56,53 @@ export function DataTableToolbar<TData>({
       return;
     }
     else
-      formData.append("file", file);
-    formData.append("remarks", remarks);
-  
+      formData.append("diary", file);
+    formData.append("remark", remarks);
+    formData.append("project_id", project_id as string);
     try {
-      const response = await fetch("/api/submit", {
-        method: "POST",
-        body: formData,
+      const res = await fetch("/api/login", {
+        method: "GET",
       });
-  
-      if (response.ok) {
-        // Handle successful submission
-        console.log("Submission successful");
-        toast({
-          title: "Success",
-          description: "Your diary has been submitted successfully",
-         
+      if (res.status === 200) {
+        const val = await res.json();
+        const response = await fetch("https://proma-ai-uw7kj.ondigitalocean.app/diarySubmit/", {
+          method: "POST",
+          headers: {
+            Authorization: `Token ${val.token.value}`,
+            // "Content-Type": "application/json",
+          },
+          body: formData,
         });
-        // Reset the form fields if needed
-        // setDate(null);
-        setFile(null);
-        setRemarks("");
+    
+        if (response.ok) {
+          // Handle successful submission
+          console.log("Submission successful");
+          toast({
+            title: "Success",
+            description: "Your diary has been submitted successfully",
+           
+          });
+          // Reset the form fields if needed
+          // setDate(null);
+          setFile(null);
+          setRemarks("");
+        } else {
+          // Handle submission error
+          toast({
+            title: "Error!",
+            description: "Failed to submit the diary",
+            variant: "destructive",
+          });
+        }
+        
       } else {
-        // Handle submission error
         toast({
           title: "Error!",
-          description: "Failed to submit the diary",
+          description: "No session exists",
           variant: "destructive",
         });
       }
+     
     } catch (error) {
       console.error("Error submitting data:", error);
     }
@@ -113,33 +122,7 @@ export function DataTableToolbar<TData>({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">
-              Date
-            </Label>
-          <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant={"outline"}
-          className={cn(
-            "w-[280px] justify-start text-left font-normal",
-            !date && "text-muted-foreground"
-          )}
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-          initialFocus
-        />
-      </PopoverContent>
-    </Popover>
-          </div>
+          
           <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="picture" className="text-right">
                       Upload
