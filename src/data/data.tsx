@@ -25,29 +25,21 @@ import {
   ]
   
   export const statuses = [
+    
+   
     {
-      value: "backlog",
-      label: "Backlog",
-      icon: QuestionMarkCircledIcon,
-    },
-    {
-      value: "todo",
-      label: "Todo",
-      icon: CircleIcon,
-    },
-    {
-      value: "in progress",
-      label: "In Progress",
+      value: "under review",
+      label: "Under Review",
       icon: StopwatchIcon,
     },
     {
-      value: "done",
-      label: "Done",
+      value: "aprroved",
+      label: "Approved",
       icon: CheckCircledIcon,
     },
     {
-      value: "canceled",
-      label: "Canceled",
+      value: "rejected",
+      label: "Rejected",
       icon: CrossCircledIcon,
     },
   ]
