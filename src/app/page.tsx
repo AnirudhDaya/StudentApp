@@ -434,7 +434,7 @@ export default function DashboardPage() {
                 </Dialog>
               </>
             )}
-             {projectId !== null && (
+             {projectId != null && (
             <Link href={`/diary/?id=${projectId}`}>
 
             <Card className="cursor-pointer">
