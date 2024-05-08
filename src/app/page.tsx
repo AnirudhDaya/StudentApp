@@ -131,7 +131,7 @@ export default function DashboardPage() {
         }
       );
       console.log(createdTeam);
-      if (createdTeam.status === 201) {
+      if (createdTeam.status === 200) {
         const team = await createdTeam.json();
         console.log(team.code);
         toast({
@@ -252,7 +252,7 @@ export default function DashboardPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [teamCode]);
 
   return (
     <>
