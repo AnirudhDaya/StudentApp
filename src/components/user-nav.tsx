@@ -42,6 +42,8 @@ import Link from "next/link"
             method: "POST",
           });
           if (logout.status === 200) {
+            localStorage.removeItem('teamName')
+            localStorage.removeItem('teamCode')
             toast({
               title: "Success",
               description: "Logging you out, thank you!",

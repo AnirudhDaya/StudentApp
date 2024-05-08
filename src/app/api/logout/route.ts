@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
       if(val)
         {
             request.cookies.delete('token');
+            
             return NextResponse.json({ status: 200 });
         }
       else

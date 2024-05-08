@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
         path: '/',
       });
       // NextResponse.redirect('/')
+      
       return NextResponse.json({}, { status: 200 });
   }
 export async function GET(request: NextRequest) {
