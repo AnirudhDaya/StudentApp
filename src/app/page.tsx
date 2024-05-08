@@ -58,6 +58,10 @@ export default function DashboardPage() {
   const [cardData, setCardData] = useState<string[]>([]);
   const [copied, setCopied] = useState<boolean>(false);
   const [projectId, setprojectid] = useState<number | null>()
+  const [teamcodeforJoin, setTeamcodeforJoin] = useState('');
+  const handleteamcode = (event: any) => {
+      setTeamcodeforJoin(event.target.value)
+  }
   const handleSubmit = async () => {
     const res = await fetch("/api/login", {
       method: "GET",
@@ -111,9 +115,10 @@ export default function DashboardPage() {
     });
     if (res.status === 200) {
       const val = await res.json();
-      console.log(teamName);
+      console.log(val.token.value);
       const data = new FormData();
-      data.append("code", teamCode);
+      data.append("code", teamcodeforJoin);
+      console.log("funda",data.get("code"));
       const createdTeam = await fetch(
         "https://proma-ai-uw7kj.ondigitalocean.app/join_team/",
         {
@@ -422,7 +427,10 @@ export default function DashboardPage() {
                     <DialogHeader>
                       <DialogTitle>Enter Team Code</DialogTitle>
                       <DialogDescription>
-                        <Input />
+                        <Input id="name"
+                      type="text"
+                      placeholder="AB1234"
+                      onChange={handleteamcode}/>
                       </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
