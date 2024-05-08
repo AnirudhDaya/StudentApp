@@ -113,7 +113,7 @@ export default function DashboardPage() {
       const val = await res.json();
       console.log(teamName);
       const data = new FormData();
-      // data.append("code", teamCode);
+      data.append("code", teamCode);
       const createdTeam = await fetch(
         "https://proma-ai-uw7kj.ondigitalocean.app//join_team/",
         {
